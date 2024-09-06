@@ -1,4 +1,10 @@
 #include QMK_KEYBOARD_H
+#include "sendstring_french.h"
+
+// Define a custom keycode for your macro
+enum custom_keycodes {
+    SHOW_LAYOUT = SAFE_RANGE,
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Layout 0: Base Layer
@@ -7,12 +13,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |------+------+------+------+------+------+------+------+------+------+------+------|
      * | Tab  |   Q  |   S  |   D  |   F  |   G  |   H  |   J  |   K  |   L  |   M  | Enter|
      * |------+------+------+------+------+------+------+------+------+------+------+------|
-     * | Shift|   W  |   X  |   C  |   V  |   B  |   N  |   ;  |   ,  |   .  |   /  |  '   |
+     * | Shift|   W  |   X  |   C  |   V  |   B  |   N  |   ;  |   ,  |   .  |   /  |Layout|
      * |------+------+------+------+------+------+------+------+------+------+------+------|
      * |BL_STP| Ctrl | Alt  | GUI  | MO(3)| Space| Space| MO(4)| Left | Down |  Up  |Right |
      * `-----------------------------------------------------------------------------------'
      */
-	[0] = LAYOUT_ortho_4x12(KC_ESC, KC_A, KC_Z, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, KC_TAB, KC_Q, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_M, KC_ENT, KC_LSFT, KC_W, KC_X, KC_C, KC_V, KC_B, KC_N, KC_SCLN, KC_COMM, KC_DOT, KC_SLSH, KC_QUOT, BL_STEP, KC_LCTL, KC_LALT, KC_LGUI, MO(3), KC_SPC, KC_SPC, MO(4), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
+	[0] = LAYOUT_ortho_4x12(
+		KC_ESC,  KC_A,    KC_Z,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
+		KC_TAB,  KC_Q,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_M,    KC_ENT,
+		KC_LSFT, KC_W,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_SCLN, KC_COMM, KC_DOT,  KC_SLSH, SHOW_LAYOUT,
+		BL_STEP, KC_LCTL, KC_LALT, KC_LGUI, MO(3),   KC_SPC,  KC_SPC,  MO(4),   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+	),
     /* Layout 3: Lower Layer
      * ,-----------------------------------------------------------------------------------.
      * | BriD | BriU | PCom | Hash | Hash | Play | Mute | Vol- | Vol+ |   7  |   8  |   9  |
@@ -45,3 +56,50 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 };
 #endif // defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case SHOW_LAYOUT:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI("r"));  
+                SEND_STRING("cmd" SS_TAP(X_ENTER));  
+                SEND_STRING(
+                    "echo Layout 0: Base Layer\n"
+                    "echo ,----------------------------------------------------------------------------------.\n"
+                    "echo | Esc  |   A  |   Z  |   E  |   R  |   T  |   Y  |   U  |   I  |   O  |   P  | Bksp |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo | Tab  |   Q  |   S  |   D  |   F  |   G  |   H  |   J  |   K  |   L  |   M  | Enter|\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo | Shift|   W  |   X  |   C  |   V  |   B  |   N  |   ;  |   ,  |   .  |   /  |Layout|\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo |BL_STP| Ctrl | Alt  | GUI  | MO(3)| Space| Space| MO(4)| Left | Down |  Up  |Right |\n"
+                    "echo `-----------------------------------------------------------------------------------'\n"
+                    "echo.\n"
+                    "echo Layout 3: Lower Layer\n"
+                    "echo ,----------------------------------------------------------------------------------.\n"
+                    "echo | BriD | BriU | PCom | Hash | Hash | Play | Mute | Vol- | Vol+ |    7 |    8 |    9 |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo |  &   |  `   |  @   |  :   |  $   |  %%  |  ^   |  _   |  *   |    4 |    5 |    6 |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo |  \"   |  <   |  >   |  (   |  )   |  {   |  }   |  ?   |  !   |   1 |    2 |    3 |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo |  |   |  \\   |  /   |  |   |   v  | Space| Space|   v  |  .   |   0 |    = |    + |\n"
+                    "echo `-----------------------------------------------------------------------------------'\n"
+                    "echo.\n"
+                    "echo Layout 4: Raise Layer\n"
+                    "echo ,----------------------------------------------------------------------------------.\n"
+                    "echo |  1   |  2   |  3   |  4   |  5   |  6   |  7   |  8   |  9   | F10  | F11  | F12  |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo | Del  | PgUp |  \\  |  0   |  [   |  ]   |  \\  |  -   |  =   |  F7  |  F8  |  F9  |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo | Bksp | PgDn | Play |   v  | Vol- | Vol+ |   v  |  #   |  `   |  F4  |  F5  |  F6  |\n"
+                    "echo |------+------+------+------+------+------+------+------+------+------+------+------|\n"
+                    "echo |   v  |   v  |   v  |   v  | MO(6)|   v  |   v  |   v  | Next |  F1  |  F2  |  F3  |\n"
+                    "echo `-----------------------------------------------------------------------------------'\n"
+                );
+            }
+            return false;
+        default:
+            return true;
+    }
+}
